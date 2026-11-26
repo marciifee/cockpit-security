@@ -13,7 +13,7 @@ const state = {
     firewallRules: {
         columns: [],
         rows: [],
-        emptyText: "暂无规则数据。",
+        emptyText: "Keine Regeldaten vorhanden.",
         page: 1,
         pageSize: 10,
     },
@@ -61,7 +61,7 @@ const state = {
         open: false,
         title: "",
         message: "",
-        confirmLabel: "确认",
+        confirmLabel: "Bestätigen",
         variant: "danger",
         resolve: null,
     },
@@ -92,7 +92,7 @@ const SECURITY_LOG_DISPLAY_LIMIT = 10;
 const SECURITY_LOG_SOURCES = [
     {
         id: "all",
-        label: "全部服务",
+        label: "Alle Dienste",
         units: ["ufw.service", "iptables.service", "ip6tables.service", "netfilter-persistent.service", "nftables.service", "firewalld.service", "fail2ban.service"],
         kernelScope: "firewall",
     },
@@ -128,8 +128,8 @@ const REQUIRED_TOOLS = {
         commands: ["ufw"],
         paths: ["/usr/sbin/ufw", "/sbin/ufw"],
         packages: ["ufw"],
-        installTitle: "安装 UFW",
-        installCopy: "需要安装 UFW 才能管理 UFW 防火墙规则。",
+        installTitle: "UFW installieren",
+        installCopy: "Installiere UFW, um UFW-Regeln zu verwalten.",
     },
     iptables: {
         id: "iptables",
@@ -139,8 +139,8 @@ const REQUIRED_TOOLS = {
         paths: ["/usr/sbin/iptables", "/sbin/iptables", "/usr/bin/iptables", "/usr/sbin/iptables-nft", "/usr/sbin/iptables-legacy"],
         packages: ["iptables"],
         packageCandidates: [["iptables"], ["iptables-nft"], ["iptables-services"]],
-        installTitle: "安装 iptables",
-        installCopy: "需要安装 iptables 才能管理 iptables INPUT 规则。",
+        installTitle: "iptables installieren",
+        installCopy: "Installiere iptables, um Regeln der INPUT-Kette zu verwalten.",
     },
     nftables: {
         id: "nftables",
@@ -150,8 +150,8 @@ const REQUIRED_TOOLS = {
         paths: ["/usr/sbin/nft", "/sbin/nft", "/usr/bin/nft", "/bin/nft"],
         packages: ["nftables"],
         packageCandidates: [["nftables"]],
-        installTitle: "安装 nftables",
-        installCopy: "需要安装 nftables 才能查看和管理 nftables 规则。",
+        installTitle: "nftables installieren",
+        installCopy: "Installiere nftables, um dessen Regeln anzuzeigen und zu verwalten.",
     },
     firewalld: {
         id: "firewalld",
@@ -161,8 +161,8 @@ const REQUIRED_TOOLS = {
         paths: ["/usr/bin/firewall-cmd", "/usr/sbin/firewall-cmd", "/bin/firewall-cmd", "/sbin/firewall-cmd"],
         packages: ["firewalld"],
         packageCandidates: [["firewalld"]],
-        installTitle: "安装 firewalld",
-        installCopy: "需要安装 firewalld 才能查看和管理防火墙区域配置。",
+        installTitle: "firewalld installieren",
+        installCopy: "Installiere firewalld, um Firewall-Zonen anzuzeigen und zu verwalten.",
     },
     fail2ban: {
         id: "fail2ban",
@@ -172,8 +172,8 @@ const REQUIRED_TOOLS = {
         paths: ["/usr/bin/fail2ban-client", "/usr/sbin/fail2ban-client"],
         packages: ["fail2ban"],
         packageCandidates: [["fail2ban"], ["fail2ban-server"]],
-        installTitle: "安装 Fail2Ban",
-        installCopy: "需要安装 Fail2Ban 才能查看 jail 状态和管理封禁 IP。",
+        installTitle: "Fail2Ban installieren",
+        installCopy: "Installiere Fail2Ban, um Jails anzuzeigen und gesperrte IP-Adressen zu verwalten. ",
     },
 };
 
@@ -327,7 +327,7 @@ function renderSuperuserDialog() {
     if (!current.open)
         return;
 
-    title.textContent = "切换到管理员访问";
+    title.textContent = "Zum Administratorzugriff wechseln";
 
     setAlert("security-auth-alert", current.error
         ? { title: current.error, variant: current.errorTone === "danger" ? "danger" : "warning" }
@@ -348,7 +348,7 @@ function renderSuperuserDialog() {
     message.textContent = current.message;
 
     promptField.hidden = !current.prompt;
-    promptLabel.textContent = current.prompt || "密码";
+    promptLabel.textContent = current.prompt || "Passwort";
     promptInput.type = current.echo ? "text" : "password";
     promptInput.value = current.value;
     promptInput.disabled = current.inProgress;
@@ -357,9 +357,9 @@ function renderSuperuserDialog() {
     cancel.disabled = current.inProgress;
 
     if (current.prompt)
-        submit.textContent = current.inProgress ? "验证中..." : "验证";
+        submit.textContent = current.inProgress ? "Authentifizierung läuft..." : "Authentifizieren";
     else
-        submit.textContent = current.inProgress ? "验证中..." : "验证";
+        submit.textContent = current.inProgress ? "Authentifizierung läuft..." : "Authentifizieren";
 
     window.setTimeout(() => {
         if (!state.superuserDialog.open)
@@ -410,12 +410,12 @@ async function invokeSuperuserStart(method) {
 
 async function startSuperuserAuthentication(method) {
     if (!state.superuserProxy?.valid || typeof state.superuserProxy.Start !== "function")
-        throw new Error("当前环境不支持从此页面直接开启管理员权限。");
+        throw new Error("In dieser Umgebung kann der Administratorzugriff nicht direkt über diese Seite aktiviert werden.");
 
     const promptListener = (_event, message, prompt, value, _unused, echo, hintError) => {
         updateSuperuserDialog({
-            message: normalizePromptText(message, "请验证以获取管理员权限"),
-            prompt: normalizePromptText(prompt, "密码"),
+            message: normalizePromptText(message, "Bitte authentifizieren, um Administratorrechte zu erhalten"),
+            prompt: normalizePromptText(prompt, "Passwort"),
             value: String(unwrapVariant(value) || ""),
             echo: Boolean(unwrapVariant(echo)),
             inProgress: false,
@@ -427,7 +427,7 @@ async function startSuperuserAuthentication(method) {
 
     updateSuperuserDialog({
         open: true,
-        message: "请验证以获取管理员权限",
+        message: "Bitte authentifizieren, um Administratorrechte zu erhalten",
         prompt: "",
         value: "",
         echo: false,
@@ -452,7 +452,7 @@ async function startSuperuserAuthentication(method) {
                 inProgress: false,
                 prompt: "",
                 message: "",
-                error: normalizePromptText(message, "切换为管理员访问时出现问题"),
+                error: normalizePromptText(message, "Fehler beim Wechsel zum Administratorzugriff"),
                 errorTone: "danger",
             });
         } else {
@@ -510,7 +510,7 @@ async function requestSuperuserAccess() {
     renderAccessState();
 
     if (!state.superuserProxy?.valid || typeof state.superuserProxy.Start !== "function") {
-        state.superuserError = " 当前环境不支持从此页面直接开启管理员权限。";
+        state.superuserError = " In dieser Umgebung kann der Administratorzugriff nicht direkt über diese Seite aktiviert werden.";
         renderAccessState();
         return;
     }
@@ -520,7 +520,7 @@ async function requestSuperuserAccess() {
         open: true,
         methods,
         selectedMethod: getPreferredSuperuserMethod(methods),
-        message: methods.length > 1 ? "" : "请验证以获取管理员权限",
+        message: methods.length > 1 ? "" : "Bitte authentifizieren, um Administratorrechte zu erhalten",
         prompt: "",
         value: "",
         echo: false,
@@ -541,7 +541,7 @@ async function requestSuperuserAccess() {
         renderSuperuserDialog();
 }
 
-const ADMIN_REQUIRED_HINT = "需要管理员访问权限。";
+const ADMIN_REQUIRED_HINT = "Administratorrechte erforderlich.";
 
 function updateWritableElements() {
     const writable = isWritable();
@@ -584,7 +584,7 @@ function renderAccessState() {
         if (spinner)
             spinner.hidden = false;
         if (copy)
-            copy.textContent = "正在检查当前会话的管理员访问权限。";
+            copy.textContent = "Administratorrechte der aktuellen Sitzung werden geprüft.";
         stopAutoRefresh();
     } else {
         if (panel)
@@ -603,8 +603,8 @@ function renderAccessState() {
 
     if (bannerCopy) {
         bannerCopy.textContent = state.superuserError
-            ? `当前会话没有管理员权限，只能查看状态。${state.superuserError}`
-            : "当前会话没有管理员权限，只能查看状态；修改防火墙、Fail2Ban 或安装软件前请先开启管理员访问。";
+            ? `Diese Sitzung hat keine Administratorrechte und kann nur den Status anzeigen.${state.superuserError}`
+            : "Diese Sitzung hat keine Administratorrechte und kann nur den Status anzeigen. Zum Ändern der Firewall oder von Fail2Ban oder zum Installieren von Software zuerst den Administratorzugriff aktivieren.";
     }
 
     if (bannerAction)
@@ -839,7 +839,7 @@ function watchPackageKitTransaction(transactionPath, signalHandlers, notifyHandl
 
     function onClose(_event, error) {
         if (signalHandlers.ErrorCode)
-            signalHandlers.ErrorCode("close", formatError(error) || "PackageKit 已断开连接。");
+            signalHandlers.ErrorCode("close", formatError(error) || "PackageKit-Verbindung wurde getrennt.");
         if (signalHandlers.Finished)
             signalHandlers.Finished(PACKAGEKIT_ENUM.EXIT_CANCELLED);
     }
@@ -954,24 +954,24 @@ function packageKitCancellableTransaction(method, arglist, progressCallback, sig
 
 function packageProgressMessage(prefix, progress) {
     if (progress?.waiting)
-        return "正在等待其他软件管理操作完成";
+        return "Warte auf den Abschluss anderer Paketverwaltungsaktionen";
     if (!progress?.package)
         return prefix;
 
     if (progress.info === INSTALL_PROGRESS_TYPE.DOWNLOADING)
-        return `正在下载 ${progress.package}`;
+        return `Download läuft: ${progress.package}`;
     if (progress.info === INSTALL_PROGRESS_TYPE.REMOVING)
-        return `正在移除 ${progress.package}`;
+        return `Wird entfernt: ${progress.package}`;
 
-    return `正在安装 ${progress.package}`;
+    return `Installation läuft: ${progress.package}`;
 }
 
 function formatInstallError(error) {
     const message = formatError(error);
     if (/ServiceUnknown|not-found|not supported|No package manager/i.test(message))
-        return "当前系统没有可用的软件管理服务，无法从此页面安装软件包。";
+        return "Keine Paketverwaltung verfügbar. Software kann über diese Seite nicht installiert werden.";
     if (/immutable|read-only|只读|不可变/i.test(message))
-        return "当前系统不支持在不可变的 /usr 上安装附加软件包。";
+        return "Auf diesem System können keine zusätzlichen Pakete im unveränderlichen /usr installiert werden.";
     return message;
 }
 
@@ -1318,7 +1318,7 @@ function formatError(error) {
     try {
         return JSON.stringify(error, null, 2);
     } catch (_error) {
-        return "命令执行失败，且无法解析错误对象。";
+        return "Befehl fehlgeschlagen; das Fehlerobjekt konnte nicht ausgewertet werden.";
     }
 }
 
@@ -1401,7 +1401,7 @@ const ALERT_ICONS = {
     info: '<path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12-5.373 12 12v24z"/>',
 };
 
-const ALERT_VARIANT_LABEL = { success: "成功提示：", warning: "警告：", danger: "错误：", info: "提示：" };
+const ALERT_VARIANT_LABEL = { success: "Erfolg:", warning: "Warnung:", danger: "Fehler:", info: "Hinweis:" };
 
 // Standard PF inline Alert, matching cockpit-components-inline-notification:
 // one line title, optional detail behind a "show more" link.
@@ -1442,10 +1442,10 @@ function setAlert(id, { title = "", detail = "", variant = "info", inline = true
         const toggle = document.createElement("button");
         toggle.type = "button";
         toggle.className = "pf-v6-c-button pf-m-link pf-m-inline alert-link";
-        toggle.textContent = "显示详情";
+        toggle.textContent = "Details anzeigen";
         toggle.addEventListener("click", () => {
             paragraph.hidden = !paragraph.hidden;
-            toggle.textContent = paragraph.hidden ? "显示详情" : "收起详情";
+            toggle.textContent = paragraph.hidden ? "Details anzeigen" : "Details ausblenden";
         });
         description.append(paragraph);
         heading.append(" ", toggle);
@@ -1480,11 +1480,11 @@ function renderFirewallInstallState(missing) {
     if (!missing)
         return;
 
-    setStatusText("firewall-status-pill", "未安装", isWritable() ? "warning" : "neutral");
+    setStatusText("firewall-status-pill", "Nicht installiert", isWritable() ? "warning" : "neutral");
     if (title)
         title.textContent = tool.installTitle;
     if (copy)
-        copy.textContent = isWritable() ? tool.installCopy : `${tool.installCopy} 安装软件需要管理员权限。`;
+        copy.textContent = isWritable() ? tool.installCopy : `${tool.installCopy} Zum Installieren von Software sind Administratorrechte erforderlich.`;
     if (action) {
         action.textContent = tool.installTitle;
         action.dataset.installTool = tool.id;
@@ -1503,11 +1503,11 @@ function renderFail2BanInstallState(missing) {
 
     if (copy)
         copy.textContent = isWritable()
-            ? "需要安装 Fail2Ban 才能查看 jail 状态和管理封禁 IP。"
-            : "需要安装 Fail2Ban 才能查看 jail 状态和管理封禁 IP。安装软件需要管理员权限。";
+            ? "Installiere Fail2Ban, um Jails anzuzeigen und gesperrte IP-Adressen zu verwalten. "
+            : "Installiere Fail2Ban, um Jails anzuzeigen und gesperrte IP-Adressen zu verwalten. Zum Installieren von Software sind Administratorrechte erforderlich.";
 
     if (missing)
-        setStatusText("fail2ban-service-pill", "未安装", isWritable() ? "warning" : "neutral");
+        setStatusText("fail2ban-service-pill", "Nicht installiert", isWritable() ? "warning" : "neutral");
 }
 
 function resetInstallDialog(options = {}) {
@@ -1575,7 +1575,7 @@ function renderInstallDialog() {
     if (!current.open)
         return;
 
-    title.textContent = "安装软件";
+    title.textContent = "Software installieren";
     setAlert("security-install-alert", current.error ? { title: current.error, variant: "danger" } : {});
 
     body.replaceChildren();
@@ -1583,15 +1583,15 @@ function renderInstallDialog() {
     const packageNames = (current.packageNames?.length ? current.packageNames : tool.packages).join(", ");
     const packageName = document.createElement("strong");
     packageName.textContent = packageNames;
-    text.append(packageName, " 将被安装。");
+    text.append(packageName, " wird installiert.");
     body.append(text);
 
-    appendPackageList(body, "附加软件包：", current.data?.extra_names || []);
-    appendPackageList(body, "将被移除：", current.data?.remove_names || []);
+    appendPackageList(body, "Zusätzliche Pakete:", current.data?.extra_names || []);
+    appendPackageList(body, "Wird entfernt:", current.data?.remove_names || []);
 
     let footerText = current.progressMessage;
     if (!footerText && current.data?.download_size)
-        footerText = `总大小：${cockpit.format_bytes(current.data.download_size)}`;
+        footerText = `Gesamtgröße: ${cockpit.format_bytes(current.data.download_size)}`;
 
     footerMessage.hidden = !footerText;
     footerMessage.replaceChildren();
@@ -1601,13 +1601,13 @@ function renderInstallDialog() {
             const spinner = document.createElement("span");
             spinner.className = "pf-v6-c-spinner pf-m-sm";
             spinner.setAttribute("role", "progressbar");
-            spinner.setAttribute("aria-label", "加载中");
+            spinner.setAttribute("aria-label", "Wird geladen");
             footerMessage.append(spinner);
         }
     }
 
     submit.disabled = current.checking || current.busy || !current.data || Boolean(current.error && !current.data);
-    submit.textContent = current.busy ? "安装中..." : "安装";
+    submit.textContent = current.busy ? "Installation läuft..." : "Installieren";
     cancel.disabled = false;
     close.disabled = false;
 }
@@ -1654,7 +1654,7 @@ async function openInstallDialog(toolId) {
         data: null,
         checking: true,
         busy: false,
-        progressMessage: "正在检查已安装的软件",
+        progressMessage: "Installierte Software wird geprüft",
         error: "",
         cancel: null,
     };
@@ -1664,7 +1664,7 @@ async function openInstallDialog(toolId) {
         const manager = await getPackageManager();
         const result = await resolveToolInstallPackages(manager, tool, progress => {
             updateInstallDialog({
-                progressMessage: progress?.waiting ? "正在等待其他软件管理操作完成" : "正在检查已安装的软件",
+                progressMessage: progress?.waiting ? "Warte auf den Abschluss anderer Paketverwaltungsaktionen" : "Installierte Software wird geprüft",
                 cancel: progress?.cancel || null,
             });
         });
@@ -1677,7 +1677,7 @@ async function openInstallDialog(toolId) {
             progressMessage: "",
             cancel: null,
             error: data.unavailable_names.length
-                ? `${data.unavailable_names[0]} 不在任何可用软件仓库中。`
+                ? `${data.unavailable_names[0]} ist in keinem verfügbaren Paketarchiv enthalten.`
                 : "",
         });
     } catch (error) {
@@ -1690,7 +1690,7 @@ async function openInstallDialog(toolId) {
             checking: false,
             progressMessage: "",
             cancel: null,
-            error: formatInstallError(error) || "无法使用系统软件管理服务。",
+            error: formatInstallError(error) || "Die Paketverwaltung des Systems ist nicht verfügbar.",
         });
     }
 }
@@ -1709,14 +1709,14 @@ async function handleInstallDialogSubmit() {
     updateInstallDialog({
         busy: true,
         error: "",
-        progressMessage: "正在安装软件包",
+        progressMessage: "Softwarepakete werden installiert",
     });
 
     try {
         const manager = await getPackageManager();
         await manager.install_missing_packages(current.data, progress => {
             updateInstallDialog({
-                progressMessage: packageProgressMessage("正在安装软件包", progress),
+                progressMessage: packageProgressMessage("Softwarepakete werden installiert", progress),
                 cancel: progress?.cancel || null,
             });
         });
@@ -1730,7 +1730,7 @@ async function handleInstallDialogSubmit() {
             busy: false,
             progressMessage: "",
             cancel: null,
-            error: formatInstallError(error) || "安装软件包失败。",
+            error: formatInstallError(error) || "Paketinstallation fehlgeschlagen.",
         });
         return;
     }
@@ -1751,29 +1751,29 @@ function summarizeOutput(text, ok = true) {
         .filter(Boolean);
 
     if (!lines.length)
-        return ok ? "命令执行完成，没有额外输出。" : "命令执行失败。";
+        return ok ? "Befehl erfolgreich ausgeführt. Keine weitere Ausgabe." : "Befehl fehlgeschlagen.";
 
     const combined = lines.join(" ");
     if (/permission denied to socket/i.test(combined))
-        return "需要管理员权限才能访问 Fail2Ban 套接字。";
+        return "Administratorrechte erforderlich für den Zugriff auf den Fail2Ban-Socket.";
 
     if (/you must be root/i.test(combined))
-        return "当前命令需要 root 权限。";
+        return "Dieser Befehl benötigt Root-Rechte.";
 
     if (/not found|command not found|No such file/i.test(combined))
-        return "命令或对应组件不存在，请先确认目标主机已安装。";
+        return "Befehl oder Komponente nicht gefunden. Bitte die Installation auf dem Zielrechner prüfen.";
 
     return lines[0];
 }
 
-function renderDetailList(id, items, emptyText = "暂无详情。") {
+function renderDetailList(id, items, emptyText = "Keine Details verfügbar.") {
     const list = document.getElementById(id);
     if (!list)
         return;
 
     list.replaceChildren();
 
-    const entries = items.length ? items : [["状态", emptyText]];
+    const entries = items.length ? items : [["Status", emptyText]];
     const fragment = document.createDocumentFragment();
 
     entries.forEach(([label, value]) => {
@@ -1844,7 +1844,7 @@ function renderTable(headId, bodyId, columns, rows, emptyText) {
         const th = document.createElement("th");
         th.className = "pf-v6-c-table__th";
         th.scope = "col";
-        th.textContent = "操作";
+        th.textContent = "Aktionen";
         headRow.append(th);
     }
 
@@ -1884,13 +1884,13 @@ function renderTable(headId, bodyId, columns, rows, emptyText) {
         if (hasActions) {
             const actionCell = document.createElement("td");
             actionCell.className = "pf-v6-c-table__td data-table__action";
-            actionCell.dataset.label = "操作";
+            actionCell.dataset.label = "Aktionen";
 
             if (row.delete && !row.delete.disabled) {
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "pf-v6-c-button pf-m-link pf-m-inline data-table__delete";
-                button.textContent = row.delete.label || "删除";
+                button.textContent = row.delete.label || "Löschen";
                 button.addEventListener("click", () => {
                     deleteFirewallRule(row.delete);
                 });
@@ -1898,7 +1898,7 @@ function renderTable(headId, bodyId, columns, rows, emptyText) {
             } else if (row.delete?.disabled) {
                 const hint = document.createElement("span");
                 hint.className = "data-table__hint";
-                hint.textContent = "由外部工具管理";
+                hint.textContent = "Extern verwaltet";
                 actionCell.append(hint);
             }
 
@@ -1922,7 +1922,7 @@ function updateFirewallRulePageOptions(totalPages) {
     for (let page = 1; page <= totalPages; page++) {
         const option = document.createElement("option");
         option.value = String(page);
-        option.label = `第 ${page} 页`;
+        option.label = `Seite ${page}`;
         fragment.append(option);
     }
     options.replaceChildren(fragment);
@@ -1940,14 +1940,14 @@ function renderFirewallRulePagination(totalRows) {
 
     const totalPages = Math.max(1, Math.ceil(totalRows / state.firewallRules.pageSize));
     container.hidden = totalRows <= state.firewallRules.pageSize;
-    meta.textContent = `第 ${state.firewallRules.page} / ${totalPages} 页`;
+    meta.textContent = `Seite ${state.firewallRules.page} / ${totalPages}`;
     prev.disabled = state.firewallRules.page <= 1;
     next.disabled = state.firewallRules.page >= totalPages;
     updateFirewallRulePageOptions(totalPages);
 
     if (jumpInput) {
         jumpInput.value = String(state.firewallRules.page);
-        jumpInput.setAttribute("aria-label", `跳转到页码，共 ${totalPages} 页`);
+        jumpInput.setAttribute("aria-label", `Zur Seite wechseln; Seiten insgesamt: ${totalPages}`);
     }
 }
 
@@ -1989,7 +1989,7 @@ function renderMetricCards(id, metrics) {
         const label = document.createElement("span");
         label.textContent = "Jail";
         const value = document.createElement("strong");
-        value.textContent = "暂无数据";
+        value.textContent = "Keine Daten verfügbar";
         card.append(label, value);
         container.append(card);
         return;
@@ -2191,7 +2191,7 @@ function getJournalIdentifier(entry) {
 }
 
 function getJournalMessage(entry) {
-    return String(entry.MESSAGE || "").trim() || "没有日志消息。";
+    return String(entry.MESSAGE || "").trim() || "Keine Protokollmeldung vorhanden.";
 }
 
 function openJournalEntry(entry) {
@@ -2216,7 +2216,7 @@ function renderSecurityLogs(entries) {
     if (!entries.length) {
         const empty = document.createElement("div");
         empty.className = "empty-message";
-        empty.textContent = "没有安全日志。";
+        empty.textContent = "Keine Sicherheitsprotokolle vorhanden.";
         container.append(empty);
         return;
     }
@@ -2281,7 +2281,7 @@ function renderSecurityLogMessage(message) {
 async function refreshSecurityLogs() {
     if (state.refreshLocks.logs) {
         state.securityLogsRefreshPending = true;
-        renderSecurityLogMessage("正在加载安全日志...");
+        renderSecurityLogMessage("Sicherheitsprotokoll wird geladen...");
         return state.refreshLocks.logs;
     }
 
@@ -2291,7 +2291,7 @@ async function refreshSecurityLogs() {
 
         const sourceId = state.securityLogSource;
         const source = getSecurityLogSource();
-        renderSecurityLogMessage("正在加载安全日志...");
+        renderSecurityLogMessage("Sicherheitsprotokoll wird geladen...");
         const result = await captureRead(buildSecurityLogArgs(source));
         if (state.securityLogSource !== sourceId) {
             state.securityLogsRefreshPending = true;
@@ -2300,7 +2300,7 @@ async function refreshSecurityLogs() {
 
         if (!result.ok) {
             renderSecurityLogMessage(isPermissionError(result.output)
-                ? "需要管理员权限才能读取系统日志。"
+                ? "Zum Lesen des Systemprotokolls sind Administratorrechte erforderlich."
                 : summarizeOutput(result.output, false));
             return;
         }
@@ -2352,16 +2352,16 @@ function positionSecurityLogMenu() {
 function normalizeStatus(value) {
     const normalized = String(value || "").trim().toLowerCase();
     const mapping = {
-        active: "运行中",
-        inactive: "未运行",
-        running: "运行中",
-        failed: "失败",
-        enabled: "已启用",
-        disabled: "已禁用",
-        loaded: "已加载",
-        masked: "已屏蔽",
+        active: "Aktiv",
+        inactive: "Inaktiv",
+        running: "Aktiv",
+        failed: "Fehlgeschlagen",
+        enabled: "Aktiviert",
+        disabled: "Deaktiviert",
+        loaded: "Geladen",
+        masked: "Maskiert",
     };
-    return mapping[normalized] || value || "未知";
+    return mapping[normalized] || value || "Unbekannt";
 }
 
 function normalizeWhitespace(value) {
@@ -2426,7 +2426,7 @@ function getFirewallBackend(id = state.firewallBackend) {
 }
 
 async function permissionResult(label, output, units = []) {
-    const details = [["权限", "读取规则需要管理员权限。"]];
+    const details = [["Berechtigung", "Zum Lesen der Regeln sind Administratorrechte erforderlich."]];
     for (const unit of units) {
         const result = await captureRead(["systemctl", "show", unit, "--property=ActiveState,UnitFileState,LoadState"]);
         if (!result.ok)
@@ -2439,7 +2439,7 @@ async function permissionResult(label, output, units = []) {
 
     return {
         kind: "permission",
-        summary: `${label} 规则需要管理员权限才能读取。`,
+        summary: `${label}-Regeln können nur mit Administratorrechten gelesen werden.`,
         detail: summarizeOutput(output, false),
         details,
     };
@@ -2451,29 +2451,29 @@ function backendError(output) {
 
 function persistDetail(persist) {
     if (!persist)
-        return ["持久化", "未知"];
+        return ["Dauerhafte Speicherung", "Unbekannt"];
 
     const stateLabels = {
-        saved: "已持久化",
-        managed: "由服务自身管理",
-        pending: "运行时规则未保存",
-        missing: "未找到持久化文件",
-        unreadable: "无法读取（需要管理员权限）",
-        unsupported: "未检测到持久化机制",
-        unknown: "无法确认",
+        saved: "Dauerhaft gespeichert",
+        managed: "Vom Dienst verwaltet",
+        pending: "Laufzeitregeln nicht gespeichert",
+        missing: "Keine Datei zur dauerhaften Speicherung gefunden",
+        unreadable: "Nicht lesbar (Administratorrechte erforderlich)",
+        unsupported: "Keine dauerhafte Speicherung erkannt",
+        unknown: "Nicht feststellbar",
     };
-    const where = persist.file ? `（${persist.file}）` : "";
-    return ["持久化", `${stateLabels[persist.state] || stateLabels.unknown}${where}`];
+    const where = persist.file ? ` (${persist.file})` : "";
+    return ["Dauerhafte Speicherung", `${stateLabels[persist.state] || stateLabels.unknown}${where}`];
 }
 
 function buildPersistSteps(mechanism, file) {
     if (mechanism === "netfilter-persistent")
-        return [{ args: ["netfilter-persistent", "save"], label: "保存 iptables 规则" }];
+        return [{ args: ["netfilter-persistent", "save"], label: "iptables-Regeln speichern" }];
 
     const target = file || "/etc/iptables/rules.v4";
     return [{
         args: ["sh", "-c", `umask 077 && iptables-save > '${target}'`],
-        label: `保存 iptables 规则到 ${target}`,
+        label: `iptables-Regeln speichern nach ${target}`,
     }];
 }
 
@@ -2481,7 +2481,7 @@ function buildNftablesPersistSteps(file) {
     const target = file || "/etc/nftables.conf";
     return [{
         args: ["sh", "-c", `umask 077 && nft list ruleset > '${target}' && systemctl enable nftables.service`],
-        label: `保存 nftables 规则到 ${target}`,
+        label: `nftables-Regeln speichern nach ${target}`,
     }];
 }
 
@@ -2490,14 +2490,14 @@ const FIREWALL_BACKENDS = {
         id: "ufw",
         label: "UFW",
         toolId: "ufw",
-        addRuleLabel: "添加规则",
-        dialogTitle: "添加 UFW 规则",
+        addRuleLabel: "Regel hinzufügen",
+        dialogTitle: "UFW-Regel hinzufügen",
         dialogHint: "",
         fields: ["action", "port", "protocol", "source"],
         actionOptions: [
-            { value: "allow", label: "allow" },
-            { value: "deny", label: "deny" },
-            { value: "reject", label: "reject" },
+            { value: "allow", label: "Erlauben (allow)" },
+            { value: "deny", label: "Blockieren (deny)" },
+            { value: "reject", label: "Zurückweisen (reject)" },
         ],
         capabilities: ["enable", "disable", "reload", "addRule", "deleteRule"],
         async read(ctx) {
@@ -2526,7 +2526,7 @@ const FIREWALL_BACKENDS = {
             return {
                 steps: [{
                     args: [ctx.tool("ufw"), "--force", "delete", rule.value],
-                    label: `UFW 删除规则 #${rule.value}`,
+                    label: `UFW Regel löschen #${rule.value}`,
                 }],
             };
         },
@@ -2535,16 +2535,16 @@ const FIREWALL_BACKENDS = {
             return {
                 enable: {
                     args: [ufw, "--force", "enable"],
-                    label: "启用 UFW",
-                    confirm: "启用后立即应用当前规则。请先确认当前管理连接所需端口已经放行，否则可能失去连接。",
+                    label: "UFW aktivieren",
+                    confirm: "Nach dem Aktivieren gelten die aktuellen Regeln sofort. Prüfe vorher, ob die Ports für deinen Verwaltungszugang freigegeben sind, damit die Verbindung erhalten bleibt.",
                 },
                 disable: {
                     args: [ufw, "disable"],
-                    label: "禁用 UFW",
-                    confirm: "禁用后所有入站过滤立即失效，主机将不再拦截入站流量。",
+                    label: "UFW deaktivieren",
+                    confirm: "Beim Deaktivieren entfällt die gesamte eingehende Filterung sofort. Eingehender Verkehr wird dann nicht mehr blockiert.",
                     danger: true,
                 },
-                reload: { args: [ufw, "reload"], label: "UFW 重新加载" },
+                reload: { args: [ufw, "reload"], label: "UFW neu laden" },
             };
         },
     },
@@ -2553,14 +2553,14 @@ const FIREWALL_BACKENDS = {
         id: "iptables",
         label: "iptables",
         toolId: "iptables",
-        addRuleLabel: "插入规则",
-        dialogTitle: "插入 iptables 规则",
-        dialogHint: "规则插入到所选链的顶部并立即生效；如需重启后保留，请使用“保存规则”。",
+        addRuleLabel: "Regel einfügen",
+        dialogTitle: "iptables-Regel einfügen",
+        dialogHint: "Die Regel wird am Anfang der ausgewählten Kette eingefügt und gilt sofort. Für die Übernahme nach einem Neustart bitte „Regeln speichern“ verwenden.",
         fields: ["chain", "action", "port", "protocol", "source"],
         actionOptions: [
-            { value: "ACCEPT", label: "ACCEPT" },
-            { value: "DROP", label: "DROP" },
-            { value: "REJECT", label: "REJECT" },
+            { value: "ACCEPT", label: "Erlauben (ACCEPT)" },
+            { value: "DROP", label: "Verwerfen (DROP)" },
+            { value: "REJECT", label: "Zurückweisen (REJECT)" },
         ],
         capabilities: ["addRule", "deleteRule", "persist"],
         fallbackChains: ["INPUT", "FORWARD", "OUTPUT"],
@@ -2587,7 +2587,7 @@ const FIREWALL_BACKENDS = {
                 // the operator is allowed to touch them, same as on the CLI.
                 parsed.manager = manager;
                 parsed.notices = [
-                    `${manager} 正在管理这台机器的防火墙规则，这里的规则由它生成：改动可能在它重新加载时被覆盖。`,
+                    `${manager} verwaltet die Firewall dieses Rechners und erzeugt diese Regeln. Änderungen können beim Neuladen überschrieben werden.`,
                     ...parsed.notices,
                 ];
                 parsed.persist = {
@@ -2602,25 +2602,25 @@ const FIREWALL_BACKENDS = {
             if (values.source)
                 args.push("-s", values.source);
             args.push("--dport", values.port, "-j", values.action);
-            return { steps: [{ args, label: `iptables 插入规则到 ${values.chain}` }] };
+            return { steps: [{ args, label: `iptables Regel einfügen in ${values.chain}` }] };
         },
         buildDeleteRule(ctx, rule) {
             return {
                 steps: [{
                     args: [ctx.tool("iptables"), "-D", rule.chain, ...rule.tokens],
-                    label: `iptables 删除 ${rule.chain} 链规则`,
+                    label: `iptables-Regel aus ${rule.chain} löschen`,
                 }],
             };
         },
         quickActions() {
             const persist = state.firewallPersist || {};
             const managerWarning = persist.manager
-                ? `\n\n注意：规则由 ${persist.manager} 生成并持久化，这里保存的内容可能与它冲突。`
+                ? `\n\nHinweis: Die Regeln werden durch ${persist.manager} erzeugt und dauerhaft gespeichert. Hier gespeicherte Regeln können damit in Konflikt stehen.`
                 : "";
             return {
                 persist: {
                     steps: buildPersistSteps(persist.mechanism, persist.file),
-                    confirm: `把当前运行时规则写入持久化文件，使其在重启后仍然生效。${managerWarning}`,
+                    confirm: `Die aktuellen Laufzeitregeln dauerhaft speichern, damit sie nach einem Neustart weiterhin gelten.${managerWarning}`,
                 },
             };
         },
@@ -2630,14 +2630,14 @@ const FIREWALL_BACKENDS = {
         id: "nftables",
         label: "nftables",
         toolId: "nftables",
-        addRuleLabel: "添加规则",
-        dialogTitle: "添加 nftables 规则",
-        dialogHint: "规则追加到所选链的末尾并立即生效；如需重启后保留，请使用“保存规则”。",
+        addRuleLabel: "Regel hinzufügen",
+        dialogTitle: "nftables-Regel hinzufügen",
+        dialogHint: "Die Regel wird am Ende der ausgewählten Kette angehängt und gilt sofort. Für die Übernahme nach einem Neustart bitte „Regeln speichern“ verwenden.",
         fields: ["chain", "action", "port", "protocol", "source"],
         actionOptions: [
-            { value: "accept", label: "accept" },
-            { value: "drop", label: "drop" },
-            { value: "reject", label: "reject" },
+            { value: "accept", label: "Erlauben (accept)" },
+            { value: "drop", label: "Verwerfen (drop)" },
+            { value: "reject", label: "Zurückweisen (reject)" },
         ],
         capabilities: ["addRule", "deleteRule", "persist"],
         async read(ctx) {
@@ -2664,13 +2664,13 @@ const FIREWALL_BACKENDS = {
             if (values.source)
                 args.push(values.source.includes(":") ? "ip6" : "ip", "saddr", values.source);
             args.push(values.protocol, "dport", values.port, values.action);
-            return { steps: [{ args, label: `nftables 添加规则到 ${chain.name} 链` }] };
+            return { steps: [{ args, label: `nftables-Regel zu Kette ${chain.name} hinzufügen` }] };
         },
         buildDeleteRule(ctx, rule) {
             return {
                 steps: [{
                     args: [ctx.tool("nftables"), "delete", "rule", rule.family, rule.table, rule.chain, "handle", String(rule.handle)],
-                    label: `nftables 删除 ${rule.chain} 链规则 ${rule.handle}`,
+                    label: `nftables-Regel aus ${rule.chain} löschen (Handle ${rule.handle})`,
                 }],
             };
         },
@@ -2679,7 +2679,7 @@ const FIREWALL_BACKENDS = {
             return {
                 persist: {
                     steps: buildNftablesPersistSteps(persist.file),
-                    confirm: "把当前规则写入持久化文件，并确保 nftables.service 开机启用。",
+                    confirm: "Die aktuellen Regeln dauerhaft speichern und nftables.service für den Systemstart aktivieren.",
                 },
             };
         },
@@ -2689,13 +2689,13 @@ const FIREWALL_BACKENDS = {
         id: "firewalld",
         label: "firewalld",
         toolId: "firewalld",
-        addRuleLabel: "添加端口",
-        dialogTitle: "添加 firewalld 端口",
-        dialogHint: "写入默认区域的运行时与永久配置；填写来源 IP 时生成 accept/drop 富规则。",
+        addRuleLabel: "Port hinzufügen",
+        dialogTitle: "firewalld-Port hinzufügen",
+        dialogHint: "Schreibt in die Laufzeit- und dauerhafte Konfiguration der Standardzone. Mit Quell-IP werden accept/drop-Rich-Rules erzeugt. Ohne Quell-IP wird der Port immer freigegeben, auch bei Auswahl von drop. Prioritäten sind hier nicht einstellbar.",
         fields: ["action", "port", "protocol", "source"],
         actionOptions: [
-            { value: "accept", label: "accept" },
-            { value: "drop", label: "drop" },
+            { value: "accept", label: "Erlauben (accept)" },
+            { value: "drop", label: "Verwerfen (drop)" },
         ],
         capabilities: ["reload", "addRule", "deleteRule"],
         async read(ctx) {
@@ -2722,11 +2722,11 @@ const FIREWALL_BACKENDS = {
                 const family = values.source.includes(":") ? "ipv6" : "ipv4";
                 const action = values.action === "drop" ? "drop" : "accept";
                 const rule = `rule family="${family}" source address="${values.source}" port port="${values.port}" protocol="${values.protocol}" ${action}`;
-                steps.push({ args: [tool, `--add-rich-rule=${rule}`], label: `firewalld 添加富规则（${values.port}/${values.protocol}）` });
-                steps.push({ args: [tool, "--permanent", `--add-rich-rule=${rule}`], label: "firewalld 写入永久配置" });
+                steps.push({ args: [tool, `--add-rich-rule=${rule}`], label: `firewalld Rich Rule hinzufügen (${values.port}/${values.protocol})` });
+                steps.push({ args: [tool, "--permanent", `--add-rich-rule=${rule}`], label: "firewalld Dauerhafte Konfiguration schreiben" });
             } else {
-                steps.push({ args: [tool, `--add-port=${values.port}/${values.protocol}`], label: `firewalld 放行端口 ${values.port}/${values.protocol}` });
-                steps.push({ args: [tool, "--permanent", `--add-port=${values.port}/${values.protocol}`], label: "firewalld 写入永久配置" });
+                steps.push({ args: [tool, `--add-port=${values.port}/${values.protocol}`], label: `firewalld Port freigeben ${values.port}/${values.protocol}` });
+                steps.push({ args: [tool, "--permanent", `--add-port=${values.port}/${values.protocol}`], label: "firewalld Dauerhafte Konfiguration schreiben" });
             }
             return { steps };
         },
@@ -2735,14 +2735,14 @@ const FIREWALL_BACKENDS = {
             const steps = [];
             const flag = `--remove-${rule.type === "rich" ? "rich-rule" : rule.type}`;
             if (rule.inRuntime !== false)
-                steps.push({ args: [tool, `${flag}=${rule.value}`], label: `firewalld 删除运行时条目 ${rule.value}` });
+                steps.push({ args: [tool, `${flag}=${rule.value}`], label: `firewalld Laufzeiteintrag löschen: ${rule.value}` });
             if (rule.inPermanent)
-                steps.push({ args: [tool, "--permanent", `${flag}=${rule.value}`], label: `firewalld 删除永久条目 ${rule.value}` });
+                steps.push({ args: [tool, "--permanent", `${flag}=${rule.value}`], label: `firewalld Dauerhaften Eintrag löschen: ${rule.value}` });
             return { steps };
         },
         quickActions(ctx) {
             return {
-                reload: { args: [ctx.tool("firewalld"), "--reload"], label: "firewalld 重新加载" },
+                reload: { args: [ctx.tool("firewalld"), "--reload"], label: "firewalld neu laden" },
             };
         },
     },
@@ -2772,28 +2772,28 @@ function parseUfwStatus(numberedOutput, verboseOutput) {
 
     return {
         summary: isActive
-            ? `UFW 已启用，解析到 ${rules.length} 条规则。`
-            : "UFW 当前未启用。",
-        statusLabel: isActive ? "运行中" : normalizeStatus(status),
+            ? `UFW ist aktiv. Erkannte Regeln: ${rules.length}.`
+            : "UFW ist derzeit deaktiviert.",
+        statusLabel: isActive ? "Aktiv" : normalizeStatus(status),
         tone: isActive ? "success" : "warning",
         ruleCount: String(rules.length),
-        policySummary: defaults ? `默认策略：${defaults}` : "未解析到默认策略。",
+        policySummary: defaults ? `Standardrichtlinie: ${defaults}` : "Keine Standardrichtlinie erkannt.",
         details: [
-            ["状态", normalizeStatus(status)],
-            defaults ? ["默认策略", defaults] : null,
-            logging ? ["日志", logging] : null,
-            ["规则数", String(rules.length)],
+            ["Status", normalizeStatus(status)],
+            defaults ? ["Standardrichtlinie", defaults] : null,
+            logging ? ["Protokoll", logging] : null,
+            ["Regelanzahl", String(rules.length)],
         ].filter(Boolean),
-        columns: ["编号", "目标", "动作", "方向", "来源"],
+        columns: ["Nummer", "Ziel", "Aktion", "Richtung", "Quelle"],
         rows: rules.map(rule => ({
             cells: [rule.number, rule.to, rule.action, rule.direction, rule.from],
             delete: {
                 kind: "ufw",
                 value: rule.number,
-                label: "删除",
+                label: "Löschen",
             },
         })),
-        emptyText: isActive ? "当前没有 UFW 规则。" : "UFW 未启用，暂无规则可显示。",
+        emptyText: isActive ? "Derzeit keine UFW-Regeln." : "UFW ist deaktiviert. Keine Regeln anzuzeigen.",
         chains: [],
         persist: { state: "managed", mechanism: "ufw", file: "/etc/ufw" },
     };
@@ -2895,41 +2895,41 @@ function parseIptablesRuleset(output, persist) {
         rules.push({ chain: ruleMatch[1], tokens, ...describeIptablesRule(tokens) });
     });
 
-    const inputPolicy = policies.INPUT || "未定义";
+    const inputPolicy = policies.INPUT || "Nicht definiert";
     const policySummary = Object.keys(policies).length
-        ? Object.entries(policies).map(([chain, policy]) => `${chain}=${policy}`).join("、")
-        : "未解析到默认策略。";
+        ? Object.entries(policies).map(([chain, policy]) => `${chain}=${policy}`).join(", ")
+        : "Keine Standardrichtlinie erkannt.";
     const unpersisted = persist?.state === "pending" || persist?.state === "missing";
     const inputFiltered = inputPolicy === "DROP" || inputPolicy === "REJECT" || rules.some(rule => rule.chain === "INPUT");
     const dockerChains = chains.filter(chain => chain.startsWith("DOCKER"));
     const notices = [];
 
     if (!rules.some(rule => rule.chain === "INPUT"))
-        notices.push("INPUT 链没有任何规则，入站流量全部放行。");
+        notices.push("INPUT-Kette enthält keine Regeln. Der gesamte eingehende Verkehr ist erlaubt.");
     if (dockerChains.length)
-        notices.push(`检测到 Docker 链（${dockerChains.join("、")}），这些规则由 Docker 维护，重启后由 Docker 自行恢复。`);
+        notices.push(`Erkannt: Docker -Kette (${dockerChains.join(", ")}), Diese Regeln werden durch Docker verwaltet und nach einem Neustart wiederhergestellt durch Docker selbst.`);
     if (unpersisted && persist?.boot !== "enabled")
-        notices.push("未检测到开机加载机制（netfilter-persistent / iptables.service），保存规则文件不会在重启后生效。");
+        notices.push("Kein Laden beim Systemstart erkannt (netfilter-persistent / iptables.service), Gespeicherte Regeln werden nach einem Neustart nicht wirksam.");
 
     return {
         summary: [
-            `INPUT 链策略为 ${inputPolicy}，共 ${rules.length} 条规则。`,
-            !inputFiltered ? "主机当前没有入站过滤。" : "",
-            unpersisted && persist?.boot === "enabled" ? "运行时规则尚未保存。" : "",
+            `INPUT-Kettenrichtlinie: ${inputPolicy}, insgesamt ${rules.length} Regeln.`,
+            !inputFiltered ? "Der Rechner filtert derzeit keinen eingehenden Verkehr." : "",
+            unpersisted && persist?.boot === "enabled" ? "Laufzeitregeln sind noch nicht gespeichert." : "",
         ].filter(Boolean).join(""),
-        statusLabel: inputPolicy === "ACCEPT" && !inputFiltered ? "入站未过滤" : `策略 ${inputPolicy}`,
+        statusLabel: inputPolicy === "ACCEPT" && !inputFiltered ? "Eingehender Verkehr ungefiltert" : `Richtlinie ${inputPolicy}`,
         tone: inputPolicy === "ACCEPT" && !inputFiltered ? "warning" : "success",
         ruleCount: String(rules.length),
-        policySummary: `默认策略：${policySummary}`,
+        policySummary: `Standardrichtlinie: ${policySummary}`,
         notices,
         details: [
-            ["默认策略", policySummary],
-            ["规则数", String(rules.length)],
-            ["链", chains.join("、") || "无"],
-            dockerChains.length ? ["Docker 链", dockerChains.join("、")] : null,
+            ["Standardrichtlinie", policySummary],
+            ["Regelanzahl", String(rules.length)],
+            ["Kette", chains.join(", ") || "Keine"],
+            dockerChains.length ? ["Docker-Ketten", dockerChains.join(", ")] : null,
             persistDetail(persist),
         ].filter(Boolean),
-        columns: ["链", "目标", "协议", "来源", "端口", "规则"],
+        columns: ["Kette", "Ziel", "Protokoll", "Quelle", "Port", "Regel"],
         rows: rules.map(rule => ({
             cells: [
                 rule.chain,
@@ -2944,15 +2944,15 @@ function parseIptablesRuleset(output, persist) {
                 chain: rule.chain,
                 tokens: rule.tokens,
                 value: rule.spec,
-                description: `iptables ${rule.chain} 链规则`,
-                label: "删除",
+                description: `iptables-Regel in Kette ${rule.chain}`,
+                label: "Löschen",
                 disabled: rule.chain.startsWith("DOCKER"),
             },
         })),
-        emptyText: "当前没有 iptables 规则。",
+        emptyText: "Derzeit keine iptables-Regeln.",
         chains: chains.map(chain => ({
             value: chain,
-            label: chain.startsWith("DOCKER") ? `${chain}（Docker 管理）` : chain,
+            label: chain.startsWith("DOCKER") ? `${chain} (Docker verwaltet)` : chain,
         })),
         persist,
     };
@@ -3148,40 +3148,40 @@ function parseNftablesRuleset(output, persist) {
 
     const notices = [];
     if (inputChains.length === 0)
-        notices.push("未发现 input 钩子链，nftables 层面没有入站过滤策略。");
+        notices.push("Keine Kette mit input-Hook gefunden. Auf nftables-Ebene ist keine Eingangsfilterung eingerichtet.");
     else if (!inputFiltered)
-        notices.push(`input 链默认策略为 ${inputChains.map(chain => chain.policy || "无").join("、")}，入站流量默认放行。`);
+        notices.push(`Die input-Kette hat die Standardrichtlinie ${inputChains.map(chain => chain.policy || "Keine").join(", ")}, Eingehender Verkehr ist standardmäßig erlaubt.`);
     if (foreignNames.length)
-        notices.push(`${foreignNames.join("、")} 由 ${foreignTables.values().next().value} 管理（通常是 Docker），不通过 nftables 修改或保存。`);
+        notices.push(`${foreignNames.join(", ")} durch ${foreignTables.values().next().value} verwaltet (normalerweise Docker), nicht mit nftables ändern oder speichern.`);
     if (!serviceManaged)
-        notices.push("nftables.service 未启用，本机防火墙不由 nftables 加载；修改规则请使用 iptables 后端，或先启用 nftables.service。");
+        notices.push("nftables.service ist nicht aktiviert und lädt die lokale Firewall nicht. Verwende zum Ändern das iptables-Backend oder aktiviere zuerst nftables.service.");
     else if (chains.some(chain => !chain.foreign && !isDeclared(chain)))
-        notices.push(`未在 ${persist.file || "nftables 配置"} 中声明的表（${[...new Set(chains.filter(chain => !chain.foreign && !isDeclared(chain)).map(chain => `${chain.family} ${chain.table}`))].join("、")}）不提供修改入口。`);
+        notices.push(`Nicht in ${persist.file || "nftables Konfiguration"} deklarierte Tabellen (${[...new Set(chains.filter(chain => !chain.foreign && !isDeclared(chain)).map(chain => `${chain.family} ${chain.table}`))].join(", ")})können hier nicht geändert werden.`);
     if (persist?.flushesEverything && (foreignNames.length || chains.length))
-        notices.push(`${persist.file || "nftables 配置"} 包含 “flush ruleset”，启动 nftables.service 会清空当前所有规则（包括 iptables/Docker 的规则）。`);
+        notices.push(`${persist.file || "nftables Konfiguration"} enthält “flush ruleset”, Starten nftables.service löscht alle aktuellen Regeln (einschließlich iptables/Docker -Regeln).`);
     if (dockerChains.length)
-        notices.push(`Docker 链（${dockerChains.join("、")}）由 Docker 维护，不提供修改入口。`);
+        notices.push(`Docker-Ketten (${dockerChains.join(", ")}) werden von Docker verwaltet und können hier nicht geändert werden.`);
     if (unpersisted && (foreignNames.length || !serviceManaged))
-        notices.push("保存 nftables 配置不会在重启后生效，规则由 iptables/Docker 自行恢复。");
+        notices.push("Die gespeicherte nftables-Konfiguration wird beim Neustart nicht geladen. iptables/Docker stellen ihre Regeln selbst wieder her.");
 
     return {
         summary: readOnly
-            ? `解析到 ${rules.length} 条规则，全部属于外部管理的表${foreignNames.length ? `（${foreignNames.join("、")}）` : ""}。`
-            : `共解析到 ${rules.length} 条 nftables 规则${unpersisted ? "；运行时规则尚未保存" : ""}。`,
-        statusLabel: inputChains.length ? describeNftablesPolicy(inputChains[0].policy) : "无 input 过滤",
+            ? `Erkannt: ${rules.length} Regeln; alle gehören zu extern verwalteten Tabellen${foreignNames.length ? ` (${foreignNames.join(", ")})` : ""}.`
+            : `Erkannte nftables-Regeln: ${rules.length}${unpersisted ? "; Laufzeitregeln noch nicht gespeichert" : ""}.`,
+        statusLabel: inputChains.length ? describeNftablesPolicy(inputChains[0].policy) : "Keine Eingangsfilterung",
         tone: inputFiltered && !readOnly ? "success" : "warning",
         ruleCount: String(rules.length),
-        policySummary: `默认策略：${policySummary}`,
+        policySummary: `Standardrichtlinie: ${policySummary}`,
         details: [
-            ["规则数", String(rules.length)],
-            ["链", chains.map(chain => `${chain.family} ${chain.table}/${chain.name}${chain.hook ? `（${chain.hook}）` : ""}${chain.foreign ? "［外部管理］" : ""}`).join("、") || "无"],
-            ["默认策略", policySummary],
-            foreignNames.length ? ["外部管理的表", foreignNames.join("、")] : null,
+            ["Regelanzahl", String(rules.length)],
+            ["Kette", chains.map(chain => `${chain.family} ${chain.table}/${chain.name}${chain.hook ? ` (${chain.hook})` : ""}${chain.foreign ? "[Extern verwaltet]" : ""}`).join(", ") || "Keine"],
+            ["Standardrichtlinie", policySummary],
+            foreignNames.length ? ["Extern verwaltete Tabellen", foreignNames.join(", ")] : null,
             persistDetail(persist),
         ].filter(Boolean),
         notices,
         readOnly,
-        columns: ["链", "规则", "句柄"],
+        columns: ["Kette", "Regel", "Handle"],
         rows: rules.map(rule => ({
             cells: [`${rule.family} ${rule.table}/${rule.chain}`, rule.spec, rule.handle],
             delete: {
@@ -3191,26 +3191,26 @@ function parseNftablesRuleset(output, persist) {
                 chain: rule.chain,
                 handle: rule.handle,
                 value: rule.handle,
-                description: `nftables ${rule.chain} 链规则（句柄 ${rule.handle}）`,
-                label: "删除",
+                description: `nftables-Regel in ${rule.chain} (Handle ${rule.handle})`,
+                label: "Löschen",
                 disabled: chains.some(chain => chain.name === rule.chain && chain.foreign),
             },
         })),
-        emptyText: "当前没有 nftables 规则。",
+        emptyText: "Derzeit keine nftables-Regeln.",
         chains: orderedChains.map(chain => ({
             value: `${chain.family} ${chain.table}/${chain.name}`,
-            label: `${chain.family} ${chain.table}/${chain.name}${chain.hook ? `（hook ${chain.hook}）` : ""}`,
+            label: `${chain.family} ${chain.table}/${chain.name}${chain.hook ? ` (hook ${chain.hook})` : ""}`,
         })),
-        persist: foreignNames.length ? { ...(persist || {}), blocked: true, blockedReason: `${foreignNames.join("、")} 由外部工具管理，保存会写入不属于 nftables 的规则。` } : persist,
+        persist: foreignNames.length ? { ...(persist || {}), blocked: true, blockedReason: `${foreignNames.join(", ")} wird extern verwaltet. Speichern würde fremde Regeln in die nftables-Konfiguration übernehmen.` } : persist,
     };
 }
 
 function describeNftablesPolicy(policy) {
     if (policy === "drop")
-        return "input 默认拒绝";
+        return "input standardmäßig blockiert";
     if (policy === "accept")
-        return "input 默认放行";
-    return policy ? `input ${policy}` : "input 无策略";
+        return "input standardmäßig erlaubt";
+    return policy ? `input ${policy}` : "input ohne Richtlinie";
 }
 
 function summarizeNftablesPolicies(hookChains) {
@@ -3220,13 +3220,13 @@ function summarizeNftablesPolicies(hookChains) {
         const key = `${chain.family} ${chain.table}`;
         if (!groups.has(key))
             groups.set(key, []);
-        groups.get(key).push(`${chain.hook}=${chain.policy || "无"}`);
+        groups.get(key).push(`${chain.hook}=${chain.policy || "Keine"}`);
     });
 
     if (!groups.size)
-        return "未解析到 ip/ip6 filter 钩子链策略。";
+        return "Keine Hook-Richtlinie für ip/ip6-Filterketten erkannt.";
 
-    return [...groups.entries()].map(([table, policies]) => `${table} ${policies.join("/")}`).join("；");
+    return [...groups.entries()].map(([table, policies]) => `${table} ${policies.join("/")}`).join("; ");
 }
 
 function chainSortKey(chain) {
@@ -3325,8 +3325,8 @@ function parseFirewalldStatus({ stateResult, zoneResult, runtime, permanent }) {
             const inRuntime = runtimeValues.has(value);
             const inPermanent = permanentValues.has(value);
             const persistedLabel = inRuntime
-                ? (inPermanent ? "运行时 + 永久" : "仅运行时")
-                : "仅永久（未生效）";
+                ? (inPermanent ? "Laufzeit + Dauerhaft" : "Nur Laufzeit")
+                : "Nur dauerhaft (inaktiv)";
             rows.push({
                 cells: [label, value, persistedLabel],
                 delete: {
@@ -3336,15 +3336,15 @@ function parseFirewalldStatus({ stateResult, zoneResult, runtime, permanent }) {
                     inRuntime,
                     inPermanent,
                     description: `firewalld ${label} ${value}`,
-                    label: "删除",
+                    label: "Löschen",
                 },
             });
         });
     };
 
-    addRows("服务", new Set(firewalldValues(runtimeInfo, "services")), permanentServices, "service");
-    addRows("端口", new Set(firewalldValues(runtimeInfo, "ports")), permanentPorts, "port");
-    addRows("富规则", new Set(firewalldLines(runtimeInfo, "rich rules")), permanentRich, "rich");
+    addRows("Dienst", new Set(firewalldValues(runtimeInfo, "services")), permanentServices, "service");
+    addRows("Port", new Set(firewalldValues(runtimeInfo, "ports")), permanentPorts, "port");
+    addRows("Rich Rules", new Set(firewalldLines(runtimeInfo, "rich rules")), permanentRich, "rich");
 
     ["forward-ports", "source-ports", "protocols", "icmp-blocks"].forEach(key => {
         firewalldValues(runtimeInfo, key).forEach(value => {
@@ -3353,35 +3353,35 @@ function parseFirewalldStatus({ stateResult, zoneResult, runtime, permanent }) {
     });
 
     const countByLabel = label => rows.filter(row => row.cells[2] === label).length;
-    const runtimeOnly = countByLabel("仅运行时");
-    const permanentOnly = countByLabel("仅永久（未生效）");
+    const runtimeOnly = countByLabel("Nur Laufzeit");
+    const permanentOnly = countByLabel("Nur dauerhaft (inaktiv)");
     const blockers = [
-        runtimeOnly ? `${runtimeOnly} 个仅运行时` : "",
-        permanentOnly ? `${permanentOnly} 个仅永久` : "",
-    ].filter(Boolean).join("，");
+        runtimeOnly ? `${runtimeOnly} Einträge nur zur Laufzeit` : "",
+        permanentOnly ? `${permanentOnly} Einträge nur dauerhaft` : "",
+    ].filter(Boolean).join(", ");
     const summary = running
-        ? `firewalld 运行中，默认区域 ${zoneName}，共 ${rows.length} 个条目${blockers ? `（${blockers}）` : ""}。`
-        : `firewalld 未运行，默认区域 ${zoneName}，显示永久配置共 ${rows.length} 个条目。`;
+        ? `firewalld aktiv; Standardzone ${zoneName}, insgesamt ${rows.length} Einträge${blockers ? ` (${blockers})` : ""}.`
+        : `firewalld inaktiv; Standardzone ${zoneName}, dauerhaft konfigurierte Einträge: ${rows.length}.`;
 
     return {
         summary,
-        statusLabel: running ? "运行中" : normalizeStatus(String(stateResult.output || "未运行").trim()),
+        statusLabel: running ? "Aktiv" : normalizeStatus(String(stateResult.output || "Inaktiv").trim()),
         tone: running ? (blockers ? "warning" : "success") : "warning",
         ruleCount: String(rows.length),
-        policySummary: `默认区域：${zoneName}${runtimeInfo.active ? "（活动）" : ""}`,
+        policySummary: `Standardzone: ${zoneName}${runtimeInfo.active ? " (aktiv)" : ""}`,
         details: [
-            ["服务状态", running ? "运行中" : normalizeStatus(String(stateResult.output || "未运行").trim())],
-            ["默认区域", `${zoneName}${runtimeInfo.active ? "（活动）" : ""}`],
-            runtimeInfo.items.target ? ["目标", runtimeInfo.items.target] : null,
-            runtimeInfo.items.interfaces ? ["接口", runtimeInfo.items.interfaces] : null,
-            runtimeInfo.items.forward ? ["转发", runtimeInfo.items.forward] : null,
-            runtimeInfo.items.masquerade ? ["伪装", runtimeInfo.items.masquerade] : null,
-            ["条目", `${rows.length} 个${blockers ? `（${blockers}）` : ""}`],
-            ["持久化", "firewalld 只持久化 --permanent 配置；“仅运行时”条目会在重新加载或重启后丢失，“仅永久”条目尚未生效。"],
+            ["Dienststatus", running ? "Aktiv" : normalizeStatus(String(stateResult.output || "Inaktiv").trim())],
+            ["Standardzone", `${zoneName}${runtimeInfo.active ? " (aktiv)" : ""}`],
+            runtimeInfo.items.target ? ["Ziel", runtimeInfo.items.target] : null,
+            runtimeInfo.items.interfaces ? ["Schnittstellen", runtimeInfo.items.interfaces] : null,
+            runtimeInfo.items.forward ? ["Weiterleitung", runtimeInfo.items.forward] : null,
+            runtimeInfo.items.masquerade ? ["Masquerading", runtimeInfo.items.masquerade] : null,
+            ["Eintrag", `${rows.length} Einträge${blockers ? ` (${blockers})` : ""}`],
+            ["Dauerhafte Speicherung", "firewalld speichert dauerhaft nur die --permanent-Konfiguration. Einträge mit „Nur Laufzeit“ gehen beim Neuladen oder Neustart verloren; Einträge mit „Nur dauerhaft“ sind noch nicht aktiv."],
         ].filter(Boolean),
-        columns: ["类型", "条目", "持久化"],
+        columns: ["Typ", "Eintrag", "Dauerhafte Speicherung"],
         rows,
-        emptyText: `默认区域 ${zoneName} 没有配置服务、端口或富规则。`,
+        emptyText: `Standardzone ${zoneName} enthält keine Dienste, Ports oder Rich Rules.`,
         chains: [],
         persist: { state: "managed", mechanism: "firewalld", file: "/etc/firewalld" },
     };
@@ -3396,20 +3396,20 @@ function parseFail2BanOverview(serviceOutput, statusOutput, serviceOk, statusOk)
         ? jailListMatch[1].split(",").map(item => item.trim()).filter(Boolean)
         : [];
     const activeState = service.ActiveState || "";
-    const serviceState = activeState ? `${normalizeStatus(activeState)} / ${service.SubState || "unknown"}` : "未知";
+    const serviceState = activeState ? `${normalizeStatus(activeState)} / ${service.SubState || "unknown"}` : "Unbekannt";
 
-    let summary = "未拿到 Fail2Ban 状态。";
+    let summary = "Fail2Ban-Status nicht verfügbar.";
     let tone = "warning";
     let permission = false;
 
     if (serviceOk && statusOk) {
         summary = jails.length
-            ? `当前共有 ${jails.length} 个 jail：${jails.join("、")}。`
-            : "当前没有已启用的 jail。";
+            ? `Insgesamt ${jails.length} Jails: ${jails.join(", ")}.`
+            : "Derzeit keine aktiven Jails.";
         tone = activeState === "active" ? "success" : "warning";
     } else if (isPermissionError(statusOutput)) {
         permission = true;
-        summary = "Fail2Ban 套接字需要管理员权限，当前会话只能看到服务状态。";
+        summary = "Fail2Ban-Socket benötigt Administratorrechte. Diese Sitzung kann nur den Dienststatus anzeigen.";
     } else if (!statusOk) {
         summary = summarizeOutput(statusOutput, false);
         tone = "danger";
@@ -3423,15 +3423,15 @@ function parseFail2BanOverview(serviceOutput, statusOutput, serviceOk, statusOk)
         tone,
         permission,
         details: [
-            ["服务", service.Id || "fail2ban.service"],
-            service.Description ? ["说明", service.Description] : null,
-            service.ActiveState ? ["运行状态", normalizeStatus(service.ActiveState)] : null,
-            service.SubState ? ["子状态", service.SubState] : null,
-            service.UnitFileState ? ["开机策略", normalizeStatus(service.UnitFileState)] : null,
-            service.LoadState ? ["加载状态", normalizeStatus(service.LoadState)] : null,
-            permission ? ["jail", "需要管理员权限才能读取 jail 列表。"] : null,
-            ["Jail 数量", permission ? "需要管理员权限" : String(jailCount)],
-            !permission && jails.length ? ["Jail 列表", jails.join("、")] : null,
+            ["Dienst", service.Id || "fail2ban.service"],
+            service.Description ? ["Beschreibung", service.Description] : null,
+            service.ActiveState ? ["Betriebsstatus", normalizeStatus(service.ActiveState)] : null,
+            service.SubState ? ["Unterstatus", service.SubState] : null,
+            service.UnitFileState ? ["Startverhalten", normalizeStatus(service.UnitFileState)] : null,
+            service.LoadState ? ["Ladestatus", normalizeStatus(service.LoadState)] : null,
+            permission ? ["jail", "Zum Lesen der Jail-Liste sind Administratorrechte erforderlich."] : null,
+            ["Anzahl der Jails", permission ? "Administratorrechte erforderlich" : String(jailCount)],
+            !permission && jails.length ? ["Jail-Liste", jails.join(", ")] : null,
         ].filter(Boolean),
     };
 }
@@ -3458,17 +3458,17 @@ function parseFail2BanJail(output, jailName) {
     return {
         name: output.match(/Status for the jail:\s*(.+)/i)?.[1]?.trim() || jailName,
         metrics: [
-            { label: "当前失败", value: detailMap["Currently failed"] || "0" },
-            { label: "当前封禁", value: detailMap["Currently banned"] || "0" },
-            { label: "累计封禁", value: detailMap["Total banned"] || "0" },
+            { label: "Aktuell fehlgeschlagen", value: detailMap["Currently failed"] || "0" },
+            { label: "Aktuell gesperrt", value: detailMap["Currently banned"] || "0" },
+            { label: "Sperren insgesamt", value: detailMap["Total banned"] || "0" },
         ],
         details: [
-            ["累计失败", detailMap["Total failed"] || "0"],
-            detailMap["File list"] ? ["日志文件", detailMap["File list"]] : null,
-            detailMap["Banned IP list"] ? ["封禁 IP", detailMap["Banned IP list"]] : null,
+            ["Fehlversuche insgesamt", detailMap["Total failed"] || "0"],
+            detailMap["File list"] ? ["Protokolldatei", detailMap["File list"]] : null,
+            detailMap["Banned IP list"] ? ["Gesperrte IP-Adressen", detailMap["Banned IP list"]] : null,
         ].filter(Boolean),
         bannedIps,
-        summary: `已加载 jail ${jailName}，当前封禁 ${detailMap["Currently banned"] || "0"} 个 IP。`,
+        summary: `Jail ${jailName} geladen. Aktuell gesperrte IP-Adressen: ${detailMap["Currently banned"] || "0"}.`,
     };
 }
 
@@ -3503,15 +3503,15 @@ function renderFirewallPersistState() {
         lines.push(persist.blockedReason);
     else if (persist && state_ !== "saved" && state_ !== "managed") {
         const messages = {
-            pending: `运行时规则与已保存文件不一致（${persist.file || "未知文件"}）。`,
-            missing: `尚未找到持久化文件${persist.file ? `（${persist.file}）` : ""}。`,
-            unreadable: `无法读取持久化文件${persist.file ? `（${persist.file}）` : ""}，需要管理员权限才能确认。`,
-            unsupported: "未检测到持久化机制，规则只存在于运行时。",
-            unknown: "无法确认规则是否已持久化。",
+            pending: `Laufzeitregeln unterscheiden sich von der gespeicherten Datei (${persist.file || "Unbekannte Datei"}).`,
+            missing: `Keine Datei zur dauerhaften Speicherung gefunden${persist.file ? ` (${persist.file})` : ""}.`,
+            unreadable: `Datei zur dauerhaften Speicherung nicht lesbar${persist.file ? ` (${persist.file})` : ""}, Zur Überprüfung sind Administratorrechte erforderlich.`,
+            unsupported: "Keine dauerhafte Speicherung erkannt. Die Regeln gelten nur zur Laufzeit.",
+            unknown: "Die dauerhafte Speicherung der Regeln konnte nicht bestätigt werden.",
         };
         lines.push(messages[state_] || messages.unknown);
         if (persist.loadedAtBoot === false)
-            lines.push("未检测到开机加载机制，即使保存规则文件，重启后也不会生效。");
+            lines.push("Kein Laden beim Systemstart erkannt. Auch gespeicherte Regeln werden nach einem Neustart nicht wirksam.");
     }
 
     lines.push(...(state.firewallNotices || []));
@@ -3528,7 +3528,7 @@ function renderFirewallStatus(parsed) {
     setText("firewall-summary-copy", parsed.summary);
     setText("firewall-policy-summary", parsed.policySummary);
     setStatusText("firewall-status-pill", parsed.statusLabel, parsed.tone);
-    renderDetailList("firewall-details", parsed.details, "没有解析到防火墙详情。");
+    renderDetailList("firewall-details", parsed.details, "Keine Firewall-Details erkannt.");
     state.firewallChains = parsed.chains || [];
     state.firewallPersist = parsed.persist || null;
     state.firewallNotices = parsed.notices || [];
@@ -3546,17 +3546,17 @@ function renderFirewallStatus(parsed) {
 function renderFirewallError(message) {
     renderFirewallInstallState(false);
     setText("firewall-summary-copy", summarizeOutput(message, false));
-    setText("firewall-policy-summary", "状态刷新失败。");
-    setStatusText("firewall-status-pill", "刷新失败", "danger");
-    renderDetailList("firewall-details", [["错误", summarizeOutput(message, false)]], "状态刷新失败。");
+    setText("firewall-policy-summary", "Statusaktualisierung fehlgeschlagen.");
+    setStatusText("firewall-status-pill", "Aktualisierung fehlgeschlagen", "danger");
+    renderDetailList("firewall-details", [["Fehler", summarizeOutput(message, false)]], "Statusaktualisierung fehlgeschlagen.");
     state.firewallChains = [];
     state.firewallPersist = null;
     state.firewallNotices = [];
     state.firewallReadOnly = false;
     state.firewallManager = "";
-    state.firewallRules.columns = ["状态"];
+    state.firewallRules.columns = ["Status"];
     state.firewallRules.rows = [];
-    state.firewallRules.emptyText = "无法读取规则列表。";
+    state.firewallRules.emptyText = "Die Regelliste konnte nicht gelesen werden.";
     state.firewallRules.page = 1;
     renderFirewallPersistState();
     renderFirewallRulesTable();
@@ -3568,17 +3568,17 @@ function renderFirewallPermission(parsed) {
     const backend = getFirewallBackend();
     setText("firewall-backend-label", backend.label);
     setText("firewall-summary-copy", parsed.summary);
-    setText("firewall-policy-summary", "需要管理员权限才能读取规则。");
-    setStatusText("firewall-status-pill", "需要管理员权限", "warning");
-    renderDetailList("firewall-details", parsed.details || [["权限", parsed.summary]], "需要管理员权限。");
+    setText("firewall-policy-summary", "Zum Lesen der Regeln sind Administratorrechte erforderlich.");
+    setStatusText("firewall-status-pill", "Administratorrechte erforderlich", "warning");
+    renderDetailList("firewall-details", parsed.details || [["Berechtigung", parsed.summary]], "Administratorrechte erforderlich.");
     state.firewallChains = [];
     state.firewallPersist = parsed.persist || null;
     state.firewallNotices = [];
     state.firewallReadOnly = false;
     state.firewallManager = "";
-    state.firewallRules.columns = ["状态"];
+    state.firewallRules.columns = ["Status"];
     state.firewallRules.rows = [];
-    state.firewallRules.emptyText = "需要管理员权限才能查看规则。";
+    state.firewallRules.emptyText = "Zum Anzeigen der Regeln sind Administratorrechte erforderlich.";
     state.firewallRules.page = 1;
     renderFirewallPersistState();
     renderFirewallRulesTable();
@@ -3589,15 +3589,15 @@ function renderFirewallMissing() {
     const tool = getCurrentFirewallTool();
     renderFirewallInstallState(true);
     setText("firewall-backend-label", tool.label);
-    setText("firewall-policy-summary", `${tool.label} 未安装。`);
+    setText("firewall-policy-summary", `${tool.label} nicht installiert.`);
     state.firewallChains = [];
     state.firewallPersist = null;
     state.firewallNotices = [];
     state.firewallReadOnly = false;
     state.firewallManager = "";
-    state.firewallRules.columns = ["状态"];
+    state.firewallRules.columns = ["Status"];
     state.firewallRules.rows = [];
-    state.firewallRules.emptyText = `${tool.label} 未安装。`;
+    state.firewallRules.emptyText = `${tool.label} nicht installiert.`;
     state.firewallRules.page = 1;
     renderFirewallPersistState();
     renderFirewallRulesTable();
@@ -3608,12 +3608,12 @@ function renderFail2BanStatus(parsed) {
     renderFail2BanInstallState(false);
     setText("fail2ban-service-state", parsed.serviceState);
     setText("fail2ban-service-copy", parsed.summary);
-    setText("fail2ban-jail-count", parsed.permission ? "需要管理员权限" : String(parsed.jailCount));
-    setStatusText("fail2ban-service-pill", parsed.permission ? "需要管理员权限" : parsed.serviceState, parsed.permission ? "warning" : parsed.tone);
-    renderDetailList("fail2ban-details", parsed.details, "没有解析到 Fail2Ban 总体状态。");
+    setText("fail2ban-jail-count", parsed.permission ? "Administratorrechte erforderlich" : String(parsed.jailCount));
+    setStatusText("fail2ban-service-pill", parsed.permission ? "Administratorrechte erforderlich" : parsed.serviceState, parsed.permission ? "warning" : parsed.tone);
+    renderDetailList("fail2ban-details", parsed.details, "Kein Fail2Ban-Gesamtstatus verfügbar.");
     renderTokenRow("fail2ban-jail-list", parsed.jails, {
         clickable: true,
-        emptyText: parsed.permission ? "需要管理员权限" : "没有 jail",
+        emptyText: parsed.permission ? "Administratorrechte erforderlich" : "Keine Jails",
         onClick: jail => {
             fillJailInputs(jail);
             loadFail2BanJail(jail);
@@ -3621,15 +3621,15 @@ function renderFail2BanStatus(parsed) {
     });
 
     if (parsed.permission)
-        clearFail2BanJail("需要管理员权限才能查看 jail 详情。");
+        clearFail2BanJail("Zum Anzeigen der Jail-Details sind Administratorrechte erforderlich.");
 }
 
 function renderFail2BanMissing() {
     renderFail2BanInstallState(true);
-    setText("fail2ban-service-state", "未安装");
-    setText("fail2ban-service-copy", "Fail2Ban 未安装。");
+    setText("fail2ban-service-state", "Nicht installiert");
+    setText("fail2ban-service-copy", "Fail2Ban nicht installiert.");
     setText("fail2ban-jail-count", "--");
-    clearFail2BanJail("Fail2Ban 未安装。");
+    clearFail2BanJail("Fail2Ban nicht installiert.");
 }
 
 function renderFail2BanJail(parsed, tone = "success") {
@@ -3638,22 +3638,22 @@ function renderFail2BanJail(parsed, tone = "success") {
     setText("fail2ban-current-jail-copy", parsed.summary);
     setStatusText("fail2ban-jail-pill", parsed.name, tone);
     renderMetricCards("fail2ban-jail-metrics", parsed.metrics);
-    renderDetailList("fail2ban-jail-details", parsed.details, "没有解析到 jail 详情。");
+    renderDetailList("fail2ban-jail-details", parsed.details, "Keine Jail-Details verfügbar.");
     renderTokenRow("fail2ban-banned-ips", parsed.bannedIps, {
-        emptyText: "当前没有封禁 IP",
+        emptyText: "Derzeit keine gesperrten IP-Adressen",
     });
     fillJailInputs(parsed.name);
 }
 
 function clearFail2BanJail(message) {
     state.currentJail = "";
-    setText("fail2ban-current-jail", "未选择");
+    setText("fail2ban-current-jail", "Nicht ausgewählt");
     setText("fail2ban-current-jail-copy", message);
-    setStatusText("fail2ban-jail-pill", "未选择");
+    setStatusText("fail2ban-jail-pill", "Nicht ausgewählt");
     renderMetricCards("fail2ban-jail-metrics", []);
     renderDetailList("fail2ban-jail-details", [], message);
     renderTokenRow("fail2ban-banned-ips", [], {
-        emptyText: "当前没有封禁 IP",
+        emptyText: "Derzeit keine gesperrten IP-Adressen",
     });
 }
 
@@ -3672,11 +3672,11 @@ async function execute(prefix, label, argsOrScript, options = {}) {
     const shouldUpdateResult = options.updateResult !== false;
 
     if (shouldUpdateResult)
-        showCommandResult(prefix, label, `执行中...\n\n${commandLabel}`, true, "正在执行命令...");
+        showCommandResult(prefix, label, `Wird ausgeführt...\n\n${commandLabel}`, true, "Befehl wird ausgeführt...");
 
     const result = await capture(argsOrScript, options);
     if (shouldUpdateResult) {
-        showCommandResult(prefix, result.ok ? label : `${label} 失败`, result.output, result.ok, options.summary);
+        showCommandResult(prefix, result.ok ? label : `${label} Fehlgeschlagen`, result.output, result.ok, options.summary);
         refreshSecurityLogs();
     }
 
@@ -3706,8 +3706,8 @@ async function refreshFirewallStatus() {
         }
 
         renderFirewallInstallState(false);
-        setText("firewall-summary-copy", "正在刷新防火墙状态...");
-        setStatusText("firewall-status-pill", "加载中", "loading");
+        setText("firewall-summary-copy", "Firewall-Status wird aktualisiert...");
+        setStatusText("firewall-status-pill", "Wird geladen", "loading");
 
         const parsed = await backend.read(FIREWALL_CONTEXT);
         if (parsed.kind === "permission") {
@@ -3733,8 +3733,8 @@ async function refreshFail2BanStatus() {
         }
 
         renderFail2BanInstallState(false);
-        setText("fail2ban-service-copy", "正在刷新 Fail2Ban 状态...");
-        setStatusText("fail2ban-service-pill", "加载中", "loading");
+        setText("fail2ban-service-copy", "Fail2Ban-Status wird aktualisiert...");
+        setStatusText("fail2ban-service-pill", "Wird geladen", "loading");
 
         const serviceName = await resolveFail2BanService();
         const [serviceResult, statusResult] = await Promise.all([
@@ -3754,7 +3754,7 @@ async function refreshFail2BanStatus() {
             if (parsed.jails.includes(state.currentJail))
                 await loadFail2BanJail(state.currentJail, { quiet: true });
             else
-                clearFail2BanJail("当前 jail 已不在总列表中，请重新选择。");
+                clearFail2BanJail("Das ausgewählte Jail ist nicht mehr in der Liste enthalten. Bitte erneut auswählen.");
         }
     });
 }
@@ -3762,28 +3762,28 @@ async function refreshFail2BanStatus() {
 async function loadFail2BanJail(jail, options = {}) {
     const jailName = jail.trim();
     if (!jailName) {
-        showCommandResult("fail2ban", "jail 查询失败", "jail 名称不能为空。", false);
+        showCommandResult("fail2ban", "Jail-Abfrage fehlgeschlagen", "Der Jail-Name darf nicht leer sein.", false);
         return;
     }
 
-    setStatusText("fail2ban-jail-pill", "加载中", "loading");
+    setStatusText("fail2ban-jail-pill", "Wird geladen", "loading");
     setText("fail2ban-current-jail", jailName);
-    setText("fail2ban-current-jail-copy", "正在加载 jail 详情...");
+    setText("fail2ban-current-jail-copy", "Jail-Details werden geladen...");
 
     const result = await captureRead([getToolCommand("fail2ban"), "status", jailName]);
     if (!result.ok) {
         const permission = isPermissionError(result.output);
-        const summary = permission ? "需要管理员权限才能查询 jail 详情。" : summarizeOutput(result.output, false);
+        const summary = permission ? "Zum Abfragen der Jail-Details sind Administratorrechte erforderlich." : summarizeOutput(result.output, false);
         setText("fail2ban-current-jail", jailName);
         setText("fail2ban-current-jail-copy", summary);
-        setStatusText("fail2ban-jail-pill", permission ? "需要管理员权限" : "加载失败", permission ? "warning" : "danger");
+        setStatusText("fail2ban-jail-pill", permission ? "Administratorrechte erforderlich" : "Laden fehlgeschlagen", permission ? "warning" : "danger");
         renderMetricCards("fail2ban-jail-metrics", []);
-        renderDetailList("fail2ban-jail-details", [["错误", summary]], "jail 查询失败。");
+        renderDetailList("fail2ban-jail-details", [["Fehler", summary]], "Jail-Abfrage fehlgeschlagen.");
         renderTokenRow("fail2ban-banned-ips", [], {
-            emptyText: "当前没有封禁 IP",
+            emptyText: "Derzeit keine gesperrten IP-Adressen",
         });
         if (!options.quiet)
-            showCommandResult("fail2ban", `jail: ${jailName} 失败`, result.output, false, summary);
+            showCommandResult("fail2ban", `jail: ${jailName} Fehlgeschlagen`, result.output, false, summary);
         return;
     }
 
@@ -4070,7 +4070,7 @@ function renderFirewallDialog() {
     copy.textContent = hint;
     form.hidden = false;
     setAlert("firewall-modal-alert", current.error ? { title: current.error, variant: "danger" } : {});
-    submit.textContent = current.busy ? "执行中..." : "应用";
+    submit.textContent = current.busy ? "Wird ausgeführt..." : "Anwenden";
     submit.disabled = current.busy;
     cancel.disabled = current.busy;
     close.disabled = current.busy;
@@ -4123,7 +4123,7 @@ function renderConfirmDialog() {
 
 function settleConfirmDialog(confirmed) {
     const { resolve } = state.confirmDialog;
-    state.confirmDialog = { open: false, title: "", message: "", confirmLabel: "确认", variant: "danger", resolve: null };
+    state.confirmDialog = { open: false, title: "", message: "", confirmLabel: "Bestätigen", variant: "danger", resolve: null };
     renderConfirmDialog();
     if (resolve)
         resolve(confirmed);
@@ -4131,7 +4131,7 @@ function settleConfirmDialog(confirmed) {
 
 // Standard Cockpit confirmation: Modal + inline warning Alert + danger primary
 // button on the left, link Cancel on the right. Deliberately not window.confirm.
-function confirmAction({ title, message = "", confirmLabel = "确认", variant = "danger" }) {
+function confirmAction({ title, message = "", confirmLabel = "Bestätigen", variant = "danger" }) {
     if (state.confirmDialog.open)
         settleConfirmDialog(false);
 
@@ -4150,12 +4150,12 @@ async function deleteFirewallRule(rule) {
         return;
 
     const managerWarning = state.firewallManager
-        ? ` ${state.firewallManager} 正在管理本机规则，改动可能在它重新加载时被覆盖。`
+        ? ` ${state.firewallManager} verwaltet die lokalen Regeln. Änderungen können beim Neuladen überschrieben werden.`
         : "";
     const confirmed = await confirmAction({
-        title: `删除 ${rule.description || rule.value}`,
-        message: `删除后规则立即失效，且不可撤销。${managerWarning}`,
-        confirmLabel: "删除",
+        title: `Löschen ${rule.description || rule.value}`,
+        message: `Die Regel wird sofort und unwiderruflich gelöscht.${managerWarning}`,
+        confirmLabel: "Löschen",
         variant: "danger",
     });
     if (!confirmed)
@@ -4171,13 +4171,13 @@ const SOURCE_PATTERN = /^[0-9a-fA-F.:]+(?:\/\d{1,3})?$/;
 
 function validateFirewallRuleForm(backend, values) {
     if (!PORT_PATTERN.test(values.port))
-        return { field: "firewall-rule-port", message: "端口格式不正确，请输入 22、22:80 或 22-80。" };
+        return { field: "firewall-rule-port", message: "Ungültiger Port. Erlaubt sind 22, 22:80 oder 22-80." };
 
     if (values.source && !SOURCE_PATTERN.test(values.source))
-        return { field: "firewall-rule-source", message: "来源格式不正确，请输入 IP、CIDR 或留空。" };
+        return { field: "firewall-rule-source", message: "Ungültige Quelle. Gib eine IP-Adresse oder ein CIDR-Netz ein oder lasse das Feld leer." };
 
     if (backend.fields.includes("chain") && !values.chain)
-        return { field: "firewall-rule-chain", message: "请先选择规则所属的链。" };
+        return { field: "firewall-rule-chain", message: "Bitte zuerst die Kette für die Regel auswählen." };
 
     return null;
 }
@@ -4187,7 +4187,7 @@ async function handleFirewallDialogSubmit() {
         return;
 
     if (!isWritable()) {
-        updateFirewallDialog({ error: "修改防火墙需要管理员权限。" });
+        updateFirewallDialog({ error: "Zum Ändern der Firewall sind Administratorrechte erforderlich." });
         return;
     }
 
@@ -4214,7 +4214,7 @@ async function handleFirewallDialogSubmit() {
 
     const plan = backend.buildAddRule(FIREWALL_CONTEXT, values);
     if (!plan) {
-        updateFirewallDialog({ error: "请先刷新状态并选择规则所属的链。" });
+        updateFirewallDialog({ error: "Bitte den Status aktualisieren und die Kette für die Regel auswählen." });
         return;
     }
 
@@ -4240,10 +4240,10 @@ async function handleQuickAction(action) {
     if (action.startsWith("fail2ban")) {
         const fail2banService = state.fail2banService || "fail2ban.service";
         const actions = {
-            "fail2ban-start": () => execute("fail2ban", "启动 Fail2Ban", ["systemctl", "start", fail2banService]),
-            "fail2ban-stop": () => execute("fail2ban", "停止 Fail2Ban", ["systemctl", "stop", fail2banService]),
-            "fail2ban-restart": () => execute("fail2ban", "重启 Fail2Ban", ["systemctl", "restart", fail2banService]),
-            "fail2ban-reload": () => execute("fail2ban", "重新加载 Fail2Ban", [getToolCommand("fail2ban"), "reload"]),
+            "fail2ban-start": () => execute("fail2ban", "Fail2Ban starten", ["systemctl", "start", fail2banService]),
+            "fail2ban-stop": () => execute("fail2ban", "Fail2Ban stoppen", ["systemctl", "stop", fail2banService]),
+            "fail2ban-restart": () => execute("fail2ban", "Fail2Ban neu starten", ["systemctl", "restart", fail2banService]),
+            "fail2ban-reload": () => execute("fail2ban", "Fail2Ban neu laden", [getToolCommand("fail2ban"), "reload"]),
         };
 
         const handler = actions[action];
@@ -4263,7 +4263,7 @@ async function handleQuickAction(action) {
         const confirmed = await confirmAction({
             title: step.label,
             message: step.confirm,
-            confirmLabel: "继续",
+            confirmLabel: "Fortfahren",
             variant: step.danger ? "danger" : "primary",
         });
         if (!confirmed)
@@ -4293,12 +4293,12 @@ async function handleFail2BanUnban(event) {
     const ip = getFormValue(form, "ip");
 
     if (!jail || !ip) {
-        showCommandResult("fail2ban", "解封失败", "jail 和 IP 都不能为空。", false);
+        showCommandResult("fail2ban", "Entsperren fehlgeschlagen", "Jail und IP-Adresse dürfen nicht leer sein.", false);
         return;
     }
 
     fillJailInputs(jail);
-    await execute("fail2ban", "Fail2Ban 解封 IP", [getToolCommand("fail2ban"), "set", jail, "unbanip", ip]);
+    await execute("fail2ban", "Fail2Ban: IP-Adresse entsperren", [getToolCommand("fail2ban"), "set", jail, "unbanip", ip]);
     form.reset();
     fillJailInputs(jail);
     await refreshFail2BanStatus();
@@ -4432,7 +4432,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     bindDarkMode();
     initSuperuser();
     renderSecurityLogSourceOptions();
-    clearFail2BanJail("可从 jail 列表快速打开，也可以手动输入名称查看。");
+    clearFail2BanJail("Wähle ein Jail aus der Liste oder gib den Namen manuell ein.");
     renderFirewallDialog();
     renderInstallDialog();
     renderSuperuserDialog();

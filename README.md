@@ -1,184 +1,85 @@
-# Cockpit Security
+# Cockpit Security – deutsche Übersetzung
 
-Security tooling for a [Cockpit](https://cockpit-project.org/) module.
+Deutsche Übersetzung der Cockpit-Erweiterung **[Bia951/cockpit-security](https://github.com/Bia951/cockpit-security)** für Firewall- und Fail2Ban-Verwaltung.
 
-This project follows the starter-kit layout, but keeps the repository root as the project root:
+Dies ist eine inoffizielle Übersetzungsvariante. Die ursprüngliche Anwendung und Firewall-Logik stammen aus dem Originalprojekt. Die Anpassungen betreffen die deutsche Oberfläche und Dokumentation; eine Zugehörigkeit zum offiziellen Cockpit-Projekt wird nicht behauptet.
 
-- source files live in `src/`
-- the build output goes to `dist/`
-- the installed Cockpit package is the built `dist/` directory
+## Umfang
 
-The current UI adds a new “安全” entry in Cockpit with two areas:
+- Deutscher Menüeintrag **Sicherheit**.
+- Übersetzte Formulare, Dialoge, Statusanzeigen, Bestätigungen und Fehlermeldungen.
+- Deutsche Beschriftungen für Allow-/Block-Aktionen; die technischen Werte wie `accept`, `drop` und `reject` bleiben unverändert.
+- Zusätzlicher Formularhinweis auf die vorhandenen Grenzen der firewalld-Eingabemaske.
 
-- 防火墙
-  - UFW
-  - iptables
-- Fail2Ban
+Die Oberfläche ist fest auf Deutsch übersetzt. Dies ist noch keine mehrsprachige Implementierung mit Sprachumschalter. Externe Systemmeldungen und die Firewall-Regeln selbst werden nicht übersetzt.
 
-# Development dependencies
+## Funktionen des Originalprojekts
 
-On Debian/Ubuntu:
+Die Erweiterung erkennt firewalld, UFW, nftables und iptables. Sie zeigt Firewall-Regeln an und bietet je nach Backend Aktionen zum Hinzufügen, Löschen, Laden oder Speichern. Für firewalld werden Dienste, Ports und Rich Rules der **Standardzone** angezeigt und Laufzeit- sowie dauerhafte Konfiguration berücksichtigt.
 
-    sudo apt install nodejs npm make
+Die Fail2Ban-Seite zeigt Dienste, Jails und gesperrte IP-Adressen an und ermöglicht Dienstaktionen sowie das Aufheben von Sperren. Änderungen benötigen Administratorrechte in Cockpit.
 
-On Fedora:
+### Grenzen des firewalld-Formulars
 
-    sudo dnf install nodejs npm make
+Das Originalformular kann keine Prioritäten wie `-100` oder `-90` einstellen. Vorhandene Rich Rules mit Prioritäten können angezeigt werden, sollten aber nicht über dieses vereinfachte Formular nachgebaut werden.
 
-On openSUSE Tumbleweed and Leap:
+**Ohne Quell-IP erzeugt das Originalformular immer eine Portfreigabe – auch bei ausgewähltem `drop`.** Mit Quell-IP erzeugt es eine `accept`- oder `drop`-Rich-Rule. Der deutsche Formularhinweis benennt dieses Verhalten. Dieser Übersetzungsstand ändert die Firewall-Logik nicht.
 
-    sudo zypper in nodejs npm make
+## Voraussetzungen
 
-# Getting and building the source
+- Linux mit installiertem Cockpit.
+- Die jeweils verwendete Firewall beziehungsweise Fail2Ban auf dem Host.
+- Node.js (laut Originalprojekt mindestens Version 16), npm und make zum Bauen.
 
-These commands check out the source and build it into the `dist/` directory:
+Beispiele für Build-Abhängigkeiten:
 
-```sh
-git clone https://github.com/Bia951/cockpit-security.git
-cd cockpit-security
-npm install
+```bash
+# Debian / Ubuntu
+sudo apt install nodejs npm make
+
+# Fedora / Rocky / AlmaLinux
+sudo dnf install nodejs npm make
+
+# openSUSE
+sudo zypper install nodejs npm make
+```
+
+## Bauen und installieren
+
+Lade dieses Repository über seine GitHub-Schaltfläche **Code** herunter oder klone seine eigene URL. Wechsle anschließend in das Repository-Verzeichnis:
+
+```bash
+npm ci
 make build
+sudo make install
 ```
 
-The build chain is intentionally simple and keeps PatternFly bundled with the plugin:
+Das installiert die Erweiterung unter `/usr/local/share/cockpit/security/`. Build und Installation können auch mit `make build` und anschließend `sudo make install` wiederholt werden. Die Abhängigkeit PatternFly wird beim Bauen in `dist/` aufgenommen.
 
-- `npm install` downloads the frontend dependency set and creates the lockfile
-- `node build.js` copies the package files from `src/` into `dist/`
-- `node build.js` also copies `@patternfly/patternfly` assets into `dist/`, so the plugin does not depend on Cockpit's shared PatternFly bundle
-- `make build` is a thin wrapper around that command
-- `make watch` watches `src/` and rebuilds on change
+Danach in Cockpit abmelden, erneut anmelden und die Browserseite vollständig neu laden. Die Erweiterung hat keinen eigenen systemd-Dienst. Ein Neustart der Firewall ist nicht nötig.
 
-# Installing
+### Bereits vorhandene benutzerspezifische Installation
 
-`make install` builds the plugin and installs it to `/usr/local/share/cockpit/security/`:
+`~/.local/share/cockpit/security` kann die systemweite Kopie überlagern. Prüfe bei weiterhin chinesischer Oberfläche:
 
-```sh
-make install
+```bash
+ls -ld ~/.local/share/cockpit/security
+readlink -f ~/.local/share/cockpit/security
 ```
 
-For development, you usually want to run the module straight out of the git tree. To do that, run:
+Wenn dieser Link auf ein altes `dist/` zeigt, muss auch dort die deutsche Variante gebaut werden oder der Link auf das `dist/` dieses Repositorys zeigen. Sichere vorhandene Anpassungen vor einem Austausch.
 
-```sh
-make devel-install
-```
+Für eine neue benutzerspezifische Entwicklungsinstallation bietet das Originalprojekt `make devel-install`. Dieser Befehl ersetzt den vorhandenen Eintrag `~/.local/share/cockpit/security`; daher nur bewusst verwenden. Das Quellverzeichnis muss anschließend bestehen bleiben.
 
-This links `dist/` into Cockpit’s local package directory. If you prefer to do it manually:
+## Herkunft und Änderungen
 
-```sh
-mkdir -p ~/.local/share/cockpit
-ln -s "$(pwd)/dist" ~/.local/share/cockpit/security
-```
+- Original: [Bia951/cockpit-security](https://github.com/Bia951/cockpit-security)
+- Übersetzungsbasis: [`8f4d1e2b3f457cd57bafb2d8636ffeea40f69c53`](https://github.com/Bia951/cockpit-security/commit/8f4d1e2b3f457cd57bafb2d8636ffeea40f69c53)
+- Übersetzungsstand: 26. November 2026
+- [Änderungs- und Prüfhinweise](docs/TRANSLATION-DE.md)
+- [Unveränderte ursprüngliche README](docs/README.upstream.md)
+- [Anleitung zur Veröffentlichung als eigener GitHub-Fork](docs/PUBLISH-DE.md)
 
-After changing the code and rebuilding, reload the Cockpit page in your browser.
+## Lizenz
 
-You can also use watch mode to rebuild automatically:
-
-```sh
-make watch
-```
-
-To remove the local development link:
-
-```sh
-make devel-uninstall
-```
-
-# Project structure
-
-The repository is organized like this:
-
-```text
-.
-├── src/
-│   ├── index.css
-│   ├── index.html
-│   ├── index.js
-│   └── manifest.json
-├── dist/
-├── build.js
-├── Makefile
-└── README.md
-```
-
-# Current functionality
-
-- Firewall page
-  - detects the firewall managers present on the host and offers them as a
-    toggle: firewalld, UFW, nftables, iptables
-  - the preferred backend is picked automatically (a running firewalld, then an
-    enabled UFW, then an enabled nftables service, then iptables) and the manual
-    choice is remembered in the browser
-  - for UFW: status, enable, disable, reload, add rule, delete by number
-  - for iptables: full ruleset from `iptables -S`, per-chain insert, delete by
-    rule spec, and rule persistence (`netfilter-persistent save` or
-    `iptables-save` into `/etc/iptables/rules.v4`, `/etc/sysconfig/iptables`)
-  - for nftables: ruleset from `nft -a list ruleset`, add/delete rules by chain
-    and handle, save into `/etc/nftables.conf` and enable `nftables.service`
-  - nftables only offers edit actions for tables the host's own
-    `/etc/nftables.conf` declares, and only when `nftables.service` is enabled.
-    On hosts where `iptables` is the nftables kernel implementation (Debian 12,
-    Ubuntu) plus Docker, the whole live ruleset belongs to iptables/Docker; those
-    tables are shown read-only and saving is blocked, because
-    `nft list ruleset > /etc/nftables.conf` there would copy Docker's rules into
-    the nftables config and duplicate them at boot. A `flush ruleset` in that
-    file is reported as well, since enabling the service would then wipe the
-    live ruleset.
-  - for firewalld: default zone services, ports and rich rules, configured in
-    both the runtime and the permanent configuration
-  - every backend reports whether its rules are persisted, and warns when the
-    runtime state is not saved
-- Fail2Ban page
-  - refresh service and global status
-  - start, stop, restart, reload
-  - inspect a jail
-  - unban an IP from a jail
-- Read-only mode
-  - read-only commands run with `superuser: "try"`, so an unprivileged session
-    still sees everything the host lets it see
-  - the page is never hidden behind an admin gate; mutating controls are hidden
-    and a banner offers "开启管理员访问"
-
-# Backend abstraction
-
-All firewall managers implement the same small driver interface in
-`src/index.js` (`FIREWALL_BACKENDS`), and the UI only talks to the selected
-driver:
-
-- `capabilities` - which actions the UI may show (`enable`, `disable`, `reload`,
-  `addRule`, `deleteRule`, `persist`)
-- `read(ctx)` - turns manager specific output into
-  `{ summary, statusLabel, tone, details, columns, rows, chains, persist, emptyText }`,
-  or `{ kind: "permission" }` / `{ kind: "error" }`
-- `buildAddRule(ctx, values)` / `buildDeleteRule(ctx, rule)` / `quickActions(ctx)`
-  - return command steps, so multi-command operations (firewalld writes both the
-  runtime and the permanent configuration) stay declarative
-- `fields` / `actionOptions` / `fallbackChains` - which dialog fields the backend
-  needs and what they contain
-
-Adding another firewall manager means adding one object to `FIREWALL_BACKENDS`.
-
-# Notes
-
-- Write operations are executed through `cockpit.spawn()` with
-  `superuser: "require"`; read operations use `superuser: "try"` and degrade to
-  a permission notice instead of failing the page.
-- If the target host does not have `ufw`, `iptables`, `nft`, `firewall-cmd` or
-  `fail2ban-client`, the install hint is shown instead of the data.
-- iptables persistence is detected and reported (`netfilter-persistent` or a
-  saved rules file); reads that cannot be answered without root say so instead
-  of showing a raw error.
-- A rules file alone does not survive a reboot: the UI also checks whether
-  `netfilter-persistent.service` or `iptables.service` is enabled, and says so
-  when saving would have no effect.
-- Docker-managed chains (`DOCKER*`) are labelled and cannot be deleted from the
-  iptables view.
-- An `INPUT` policy of `ACCEPT` with no `INPUT` rules is reported as "no inbound
-  filtering" instead of a healthy firewall.
-- This repository currently ships a lightweight build chain. It does not yet reintroduce the full starter-kit packaging, translation, and CI stack.
-- The current build uses `npm` only to vendor frontend assets such as PatternFly into the plugin package; the UI code itself is still plain HTML/CSS/JS.
-
-# Further reading
-
-- [Cockpit Deployment and Developer documentation](https://cockpit-project.org/guide/latest/)
-- [Cockpit Starter Kit announcement](https://cockpit-project.org/blog/cockpit-starter-kit.html)
-- [Make your project easily discoverable](https://cockpit-project.org/blog/making-a-cockpit-application.html)
+Die Lizenz des Originalprojekts bleibt erhalten: **LGPL-2.1-or-later** gemäß Projektmetadaten; siehe [LICENSE](LICENSE). Die deutschen Übersetzungen und Dokumentationsanpassungen werden unter denselben Bedingungen bereitgestellt. Originale Urheberhinweise und Git-Historie bleiben erhalten.
